@@ -19,6 +19,8 @@ public class AuthenticationUserRepository implements AuthenticatedUserGateway {
         this.passwordEncoder = passwordEncoder;
         users.put("admin", new AuthenticatedUser(1L, "admin", passwordEncoder.encode("admin"), "ADMIN"));
         users.put("alf", new AuthenticatedUser(2L, "alf", passwordEncoder.encode("alf"), "USER"));
+        users.put("both", new AuthenticatedUser(2L, "both", passwordEncoder.encode("both"),
+                "USER,ADMIN"));
     }
 
     @Override

@@ -11,10 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class SearchAuthenticatedUser implements UserDetailsService {
@@ -35,8 +32,12 @@ public class SearchAuthenticatedUser implements UserDetailsService {
     private List<GrantedAuthority> getGrantedAuthorities(AuthenticatedUser user) {
         List<GrantedAuthority> authorities = new ArrayList<>();
         Map<String, Object> attributes = new HashMap<>();
-        
-        attributes.put("role", user.role());
+
+        List<String> roles = Arrays.stream(user.roles().split(","))
+                                   .map(role -> "ROLE_" + role)
+                                   .toList();
+
+        attributes.put("roles", roles);
         attributes.put("username", user.username());
         authorities.add(new OAuth2UserAuthority(attributes));
 

@@ -10,12 +10,13 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CreateToken {
 
-    private JwtEncoder jwtEncoder;
+    private final JwtEncoder jwtEncoder;
 
     public CreateToken(JwtEncoder jwtEncoder) {
         this.jwtEncoder = jwtEncoder;
@@ -23,15 +24,28 @@ public class CreateToken {
 
     public String generate(Authentication authentication) {
         Instant now = Instant.now();
-        Optional<OAuth2UserAuthority> oAuth2UserAuthority = (Optional<OAuth2UserAuthority>) authentication.getAuthorities().stream().findFirst();
-        String role = "unknown";
+
+        Optional<OAuth2UserAuthority> oAuth2UserAuthority =
+                (Optional<OAuth2UserAuthority>) authentication.getAuthorities()
+                                                                                                          .stream()
+                                                                                                          .findFirst();
+        List<String> roles = List.of("unknown");
         if (oAuth2UserAuthority.isPresent()) {
-            role = (String) oAuth2UserAuthority.get().getAttributes().get("role");
+            roles = (List<String>) oAuth2UserAuthority.get().getAttributes().get("roles");
         }
 
-        JwtClaimsSet claims = JwtClaimsSet.builder().issuer("self").issuedAt(now).expiresAt(now.plus(1, ChronoUnit.DAYS)).subject(authentication.getName()).claim("role", role).build();
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                                          .issuer("self")
+                                          .issuedAt(now)
+                                          .expiresAt(now.plus(1, ChronoUnit.DAYS))
+                                          .subject(authentication.getName())
+                                          .claim("roles", roles)
+                                          .build();
 
-        JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(JwsHeader.with(SignatureAlgorithm.RS256).build(), claims);
+        JwtEncoderParameters jwtEncoderParameters =
+                JwtEncoderParameters.from(JwsHeader.with(SignatureAlgorithm.RS256)
+                                                                                       .build(),
+                        claims);
         return this.jwtEncoder.encode(jwtEncoderParameters).getTokenValue();
     }
 }

@@ -10,6 +10,7 @@ public class AdministrationRestController {
 
     @GetMapping("/admin")
     public String getAdmin(@AuthenticationPrincipal Jwt jwt) {
-        return "Welcome on administration page " + jwt.getClaimAsString(JwtClaimNames.SUB) + " " + jwt.getClaimAsString("role");
+        return "Welcome on administration page " + jwt.getClaimAsString(JwtClaimNames.SUB) + " " + jwt.getClaimAsStringList("roles")
+                                                                                                      .get(0);
     }
 }

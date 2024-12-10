@@ -11,37 +11,50 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-    private UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
 
     @Inject
-    public SecurityConfiguration(
-            final UserDetailsService userDetailsService) {
+    public SecurityConfiguration(final UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
     @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(jwt -> {
+            Collection<String> roles = jwt.getClaimAsStringList("roles");
+            return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        });
+        return converter;
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> {
-                    //auth.requestMatchers("/admin").hasRole("ADMIN");
-                    //auth.requestMatchers("/api").hasRole("USER");
-                    auth.requestMatchers(HttpMethod.POST, "/login").permitAll();
-                    auth.anyRequest().authenticated();
-                })
-                //.formLogin(Customizer.withDefaults())
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
-                .httpBasic(Customizer.withDefaults())
-                .build();
+        return http.csrf(AbstractHttpConfigurer::disable)
+                   .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                   .authorizeHttpRequests(auth -> {
+                       auth.requestMatchers("/admin/**").hasRole("ADMIN");
+                       auth.requestMatchers("/api/**").hasRole("USER");
+                       auth.requestMatchers(HttpMethod.POST, "/login").permitAll();
+                       auth.anyRequest().authenticated();
+                   })
+                   //.formLogin(Customizer.withDefaults())
+                   .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
+                   .httpBasic(Customizer.withDefaults())
+                   .build();
     }
 
     @Bean
