@@ -1,6 +1,8 @@
 package com.alfsoftwares.honey.authentication.infrastructure.configuration;
 
 import jakarta.inject.Inject;
+import java.util.Collection;
+import java.util.stream.Collectors;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,50 +19,55 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-    private final UserDetailsService userDetailsService;
+  private final UserDetailsService userDetailsService;
 
-    @Inject
-    public SecurityConfiguration(final UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
+  @Inject
+  public SecurityConfiguration(final UserDetailsService userDetailsService) {
+    this.userDetailsService = userDetailsService;
+  }
 
-    @Bean
-    public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-        converter.setJwtGrantedAuthoritiesConverter(jwt -> {
-            Collection<String> roles = jwt.getClaimAsStringList("roles");
-            return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+  @Bean
+  public JwtAuthenticationConverter jwtAuthenticationConverter() {
+    JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+    converter.setJwtGrantedAuthoritiesConverter(
+        jwt -> {
+          Collection<String> roles = jwt.getClaimAsStringList("roles");
+          return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
         });
-        return converter;
-    }
+    return converter;
+  }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.csrf(AbstractHttpConfigurer::disable)
-                   .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                   .authorizeHttpRequests(auth -> {
-                       auth.requestMatchers("/admin/**").hasRole("ADMIN");
-                       auth.requestMatchers("/api/**").hasRole("USER");
-                       auth.requestMatchers(HttpMethod.POST, "/login").permitAll();
-                       auth.anyRequest().authenticated();
-                   })
-                   //.formLogin(Customizer.withDefaults())
-                   .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
-                   .httpBasic(Customizer.withDefaults())
-                   .build();
-    }
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    return http.csrf(AbstractHttpConfigurer::disable)
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(
+            auth -> {
+              auth.requestMatchers("/admin/**").hasRole("ADMIN");
+              auth.requestMatchers("/api/**").hasRole("USER");
+              auth.requestMatchers(HttpMethod.POST, "/login").permitAll();
+              auth.anyRequest().authenticated();
+            })
+        .oauth2ResourceServer(
+            oauth2 ->
+                oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
+        .httpBasic(Customizer.withDefaults())
+        .build();
+  }
 
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder passwordEncoder) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
-        return authenticationManagerBuilder.build();
-    }
+  @Bean
+  public AuthenticationManager authenticationManager(
+      HttpSecurity http, PasswordEncoder passwordEncoder) throws Exception {
+    AuthenticationManagerBuilder authenticationManagerBuilder =
+        http.getSharedObject(AuthenticationManagerBuilder.class);
+    authenticationManagerBuilder
+        .userDetailsService(userDetailsService)
+        .passwordEncoder(passwordEncoder);
+    return authenticationManagerBuilder.build();
+  }
 }

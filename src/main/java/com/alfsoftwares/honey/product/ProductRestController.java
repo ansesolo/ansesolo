@@ -1,4 +1,5 @@
 package com.alfsoftwares.honey.product;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -11,11 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class ProductRestController {
 
-    @GetMapping(path = "/products")
-    @PreAuthorize("hasRole('USER')")
-    public String getProducts(@AuthenticationPrincipal Jwt jwt) {
+  @GetMapping(path = "/products")
+  @PreAuthorize("hasRole('USER')")
+  public String getProducts(@AuthenticationPrincipal Jwt jwt) {
 
-        return "Welcome on products page for " + jwt.getClaimAsString(JwtClaimNames.SUB) + " " + jwt.getClaimAsStringList("roles")
-                                                                                                    .get(0);
-    }
+    return "Welcome on products page for "
+        + jwt.getClaimAsString(JwtClaimNames.SUB)
+        + " "
+        + jwt.getClaimAsStringList("roles").get(0);
+  }
 }

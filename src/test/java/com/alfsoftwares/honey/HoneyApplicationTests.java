@@ -8,14 +8,11 @@ import org.springframework.modulith.docs.Documenter;
 @SpringBootTest
 class HoneyApplicationTests {
 
-	@Test
-	void writeDocumentationSnippets() {
+  @Test
+  void writeDocumentationSnippets() {
 
-		ApplicationModules modules = ApplicationModules.of(HoneyApplication.class).verify();
+    ApplicationModules modules = ApplicationModules.of(HoneyApplication.class).verify();
 
-		new Documenter(modules)
-				.writeModulesAsPlantUml()
-				.writeIndividualModulesAsPlantUml();
-	}
-
+    new Documenter(modules).writeModulesAsPlantUml().writeIndividualModulesAsPlantUml();
+  }
 }

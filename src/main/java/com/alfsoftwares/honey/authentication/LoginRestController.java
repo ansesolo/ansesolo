@@ -7,14 +7,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class LoginRestController {
-    private CreateToken createToken;
+  private CreateToken createToken;
 
-    public LoginRestController(CreateToken createToken) {
-        this.createToken = createToken;
-    }
+  public LoginRestController(CreateToken createToken) {
+    this.createToken = createToken;
+  }
 
-    @PostMapping("/login")
-    public String getToken(Authentication authentication) {
-        return createToken.generate(authentication);
-    }
+  @PostMapping("/login")
+  public String getToken(Authentication authentication) {
+    return createToken.generate(authentication);
+  }
 }
