@@ -1,5 +1,7 @@
 package com.alfsoftwares.honey.authentication.domain.usecase;
 
+import static com.alfsoftwares.honey.authentication.domain.model.AuthenticatedUser.ROLE_SEPARATOR;
+
 import com.alfsoftwares.honey.authentication.domain.gateway.AuthenticatedUserGateway;
 import com.alfsoftwares.honey.authentication.domain.model.AuthenticatedUser;
 import jakarta.inject.Inject;
@@ -33,7 +35,7 @@ public class SearchAuthenticatedUser implements UserDetailsService {
     Map<String, Object> attributes = new HashMap<>();
 
     List<String> roles =
-        Arrays.stream(user.roles().split(",")).map(role -> "ROLE_" + role).toList();
+        Arrays.stream(user.roles().split(ROLE_SEPARATOR)).map(role -> "ROLE_" + role).toList();
 
     attributes.put("roles", roles);
     attributes.put("username", user.username());

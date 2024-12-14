@@ -1,5 +1,7 @@
 package com.alfsoftwares.honey.authentication.infrastructure.repository;
 
+import static com.alfsoftwares.honey.authentication.domain.model.AuthenticatedUser.ROLE_SEPARATOR;
+
 import com.alfsoftwares.honey.authentication.domain.gateway.AuthenticatedUserGateway;
 import com.alfsoftwares.honey.authentication.domain.model.AuthenticatedUser;
 import jakarta.inject.Inject;
@@ -21,7 +23,9 @@ public class AuthenticationUserRepository implements AuthenticatedUserGateway {
         "admin", new AuthenticatedUser(1L, "admin", passwordEncoder.encode("admin"), "ADMIN"));
     users.put("alf", new AuthenticatedUser(2L, "alf", passwordEncoder.encode("alf"), "USER"));
     users.put(
-        "both", new AuthenticatedUser(2L, "both", passwordEncoder.encode("both"), "USER,ADMIN"));
+        "both",
+        new AuthenticatedUser(
+            2L, "both", passwordEncoder.encode("both"), "USER" + ROLE_SEPARATOR + "ADMIN"));
   }
 
   @Override
