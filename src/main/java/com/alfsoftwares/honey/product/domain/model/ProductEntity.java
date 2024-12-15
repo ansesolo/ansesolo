@@ -10,6 +10,7 @@ public class ProductEntity extends NamedEntity {
   private BigDecimal defaultPrice;
 
   private ProductEntity(ProductBuilder builder) {
+    this.setId(builder.id);
     this.setName(builder.name);
     this.unit = builder.unit;
     this.defaultPrice = builder.defaultPrice;
