@@ -1,5 +1,8 @@
 package com.alfsoftwares.honey.authentication.infrastructure.configuration;
 
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import jakarta.inject.Inject;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -21,6 +24,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+
 public class SecurityConfiguration {
 
   private final UserDetailsService userDetailsService;
@@ -51,6 +55,9 @@ public class SecurityConfiguration {
               auth.requestMatchers("/admin/**").hasRole("ADMIN");
               auth.requestMatchers("/api/**").hasRole("USER");
               auth.requestMatchers(HttpMethod.POST, "/login").permitAll();
+              auth.requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll();
+              auth.requestMatchers(HttpMethod.GET, "/swagger-resources/*").permitAll();
+              auth.requestMatchers(HttpMethod.GET, "/api-docs/**").permitAll();
               auth.anyRequest().authenticated();
             })
         .oauth2ResourceServer(
@@ -69,5 +76,21 @@ public class SecurityConfiguration {
         .userDetailsService(userDetailsService)
         .passwordEncoder(passwordEncoder);
     return authenticationManagerBuilder.build();
+  }
+
+  @Bean
+  public OpenAPI customOpenAPI() {
+    return new OpenAPI()
+        .components(
+            new Components()
+                .addSecuritySchemes(
+                    "Bearer Authentication",
+                    new SecurityScheme()
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer")
+                        .bearerFormat("JWT"))
+                .addSecuritySchemes(
+                    "Basic Authentication",
+                    new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("basic")));
   }
 }

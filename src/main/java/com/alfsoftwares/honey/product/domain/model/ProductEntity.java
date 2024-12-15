@@ -2,18 +2,17 @@ package com.alfsoftwares.honey.product.domain.model;
 
 import com.alfsoftwares.honey.core.domain.model.NamedEntity;
 import com.alfsoftwares.honey.core.domain.model.Unit;
-import javax.money.MonetaryAmount;
-import org.javamoney.moneta.Money;
+import java.math.BigDecimal;
 
 public class ProductEntity extends NamedEntity {
 
   private Unit unit = Unit.UNIT;
-  private MonetaryAmount defaultPrice;
+  private BigDecimal defaultPrice;
 
   private ProductEntity(ProductBuilder builder) {
     this.setName(builder.name);
     this.unit = builder.unit;
-    this.defaultPrice = getDefaultPrice();
+    this.defaultPrice = builder.defaultPrice;
   }
 
   public Unit getUnit() {
@@ -24,11 +23,11 @@ public class ProductEntity extends NamedEntity {
     this.unit = unit;
   }
 
-  public MonetaryAmount getDefaultPrice() {
+  public BigDecimal getDefaultPrice() {
     return defaultPrice;
   }
 
-  public void setDefaultPrice(final MonetaryAmount defaultPrice) {
+  public void setDefaultPrice(final BigDecimal defaultPrice) {
     this.defaultPrice = defaultPrice;
   }
 
@@ -37,7 +36,7 @@ public class ProductEntity extends NamedEntity {
     private final long id;
     private final String name;
     private Unit unit = Unit.UNIT;
-    private MonetaryAmount defaultPrice = Money.of(0, "EUR");
+    private BigDecimal defaultPrice = BigDecimal.valueOf(0L);
 
     public ProductBuilder(long id, String name) {
       this.id = id;
@@ -49,7 +48,7 @@ public class ProductEntity extends NamedEntity {
       return this;
     }
 
-    public ProductBuilder withMoney(MonetaryAmount defaultPrice) {
+    public ProductBuilder withPrice(BigDecimal defaultPrice) {
       this.defaultPrice = defaultPrice;
       return this;
     }

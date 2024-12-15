@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController()
 @RequestMapping("/api")
-public class ProductRestController {
+public class ProductRestController implements ProductRestControllerDocumentation {
 
   private SearchProductAdapter searchProductAdapter;
 
