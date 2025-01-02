@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SearchAuthenticatedUser implements UserDetailsService {
-  private AuthenticatedUserGateway authenticatedUserGateway;
+  private final AuthenticatedUserGateway authenticatedUserGateway;
 
   @Inject
   public SearchAuthenticatedUser(final AuthenticatedUserGateway authenticatedUserGateway) {

@@ -43,6 +43,7 @@ public class CreateToken {
 
     JwtEncoderParameters jwtEncoderParameters =
         JwtEncoderParameters.from(JwsHeader.with(SignatureAlgorithm.RS256).build(), claims);
+
     return this.jwtEncoder.encode(jwtEncoderParameters).getTokenValue();
   }
 }

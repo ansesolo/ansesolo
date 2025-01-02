@@ -48,4 +48,35 @@ public interface ProductRestControllerDocumentation {
   ResponseEntity<List<ProductEntity>> getProducts(
       @Parameter(name = "jwt", description = "The authentication token", in = ParameterIn.HEADER)
           Jwt jwt);
+
+  @Operation(
+      summary = "Get a product",
+      description = "Returns a particular product or empty",
+      tags = {"Products"})
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = ProductEntity.class)))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Not authorized",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Void.class))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Not found - The product was not found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Void.class)))
+      })
+  ResponseEntity<ProductEntity> getProduct(
+      @Parameter(name = "id", description = "The product id", in = ParameterIn.PATH) Long id);
 }
