@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class ProductRepository implements ProductGateway {
 
-  private Map<Long, ProductEntity> products = new HashMap<>();
+  private final Map<Long, ProductEntity> products = new HashMap<>();
 
   public ProductRepository() {
     products.put(

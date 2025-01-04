@@ -40,7 +40,7 @@ public class ProductRestController implements ProductRestControllerDocumentation
     Optional<ProductEntity> product = searchProductAdapter.getProduct(id);
 
     return product
-        .map(productEntity -> ResponseEntity.ok().body(new ProductEntityModel(productEntity)))
+        .map(entity -> ResponseEntity.ok().body(new ProductEntityModel(entity)))
         .orElseGet(() -> ResponseEntity.notFound().build());
   }
 }

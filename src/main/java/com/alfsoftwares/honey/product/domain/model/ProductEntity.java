@@ -3,14 +3,16 @@ package com.alfsoftwares.honey.product.domain.model;
 import com.alfsoftwares.honey.core.domain.model.NamedEntity;
 import com.alfsoftwares.honey.core.domain.model.Unit;
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 
 public class ProductEntity extends NamedEntity {
 
-  private Unit unit = Unit.UNIT;
+  private Unit unit;
   private BigDecimal defaultPrice;
 
   private ProductEntity(ProductBuilder builder) {
     this.setId(builder.id);
+    this.setCreatedAt(ZonedDateTime.now());
     this.setName(builder.name);
     this.unit = builder.unit;
     this.defaultPrice = builder.defaultPrice;
