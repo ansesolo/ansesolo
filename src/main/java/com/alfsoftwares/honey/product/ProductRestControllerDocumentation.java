@@ -1,5 +1,6 @@
 package com.alfsoftwares.honey.product;
 
+import com.alfsoftwares.honey.product.application.model.ProductEntityModel;
 import com.alfsoftwares.honey.product.domain.model.ProductEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,7 +13,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.jwt.Jwt;
 
 @SecurityRequirement(name = "Bearer Authentication")
 public interface ProductRestControllerDocumentation {
@@ -45,9 +45,7 @@ public interface ProductRestControllerDocumentation {
                     mediaType = "application/json",
                     schema = @Schema(implementation = Void.class)))
       })
-  ResponseEntity<List<ProductEntity>> getProducts(
-      @Parameter(name = "jwt", description = "The authentication token", in = ParameterIn.HEADER)
-          Jwt jwt);
+  ResponseEntity<List<ProductEntityModel>> getProducts();
 
   @Operation(
       summary = "Get a product",
@@ -77,6 +75,6 @@ public interface ProductRestControllerDocumentation {
                     mediaType = "application/json",
                     schema = @Schema(implementation = Void.class)))
       })
-  ResponseEntity<ProductEntity> getProduct(
+  ResponseEntity<ProductEntityModel> getProduct(
       @Parameter(name = "id", description = "The product id", in = ParameterIn.PATH) Long id);
 }
